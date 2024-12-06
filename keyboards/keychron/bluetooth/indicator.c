@@ -91,6 +91,7 @@ static pin_t host_led_pin_list[HOST_DEVICES_COUNT] = HOST_LED_PIN_LIST;
 #    define LED_INDICATORS_USER led_matrix_indicators_user
 #    define LED_NONE_INDICATORS_KB led_matrix_none_indicators_kb
 #    define SET_ALL_LED_OFF() led_matrix_set_value_all(0)
+#    define SET_ALL_LED_RED() led_matrix_set_value_all(255)
 #    define SET_LED_OFF(idx) led_matrix_set_value(idx, 0)
 #    define SET_LED_ON(idx) led_matrix_set_value(idx, 255)
 #    define SET_LED_BT(idx) led_matrix_set_value(idx, 255)
@@ -114,6 +115,7 @@ static pin_t host_led_pin_list[HOST_DEVICES_COUNT] = HOST_LED_PIN_LIST;
 #    define LED_INDICATORS_USER rgb_matrix_indicators_user
 #    define LED_NONE_INDICATORS_KB rgb_matrix_none_indicators_kb
 #    define SET_ALL_LED_OFF() rgb_matrix_set_color_all(0, 0, 0)
+#    define SET_ALL_LED_RED() rgb_matrix_set_color_all(255, 135, 0)
 #    define SET_LED_OFF(idx) rgb_matrix_set_color(idx, 0, 0, 0)
 #    define SET_LED_ON(idx) rgb_matrix_set_color(idx, 255, 255, 255)
 #    define SET_LED_BT(idx) rgb_matrix_set_color(idx, 0, 0, 255)
@@ -484,11 +486,15 @@ __attribute__((weak)) void os_state_indicate(void) {
 #    endif
 #    if defined(CAPS_LOCK_INDEX)
     if (host_keyboard_led_state().caps_lock) {
-#        if defined(DIM_CAPS_LOCK)
-        SET_LED_OFF(CAPS_LOCK_INDEX);
-#        else
-        SET_LED_ON(CAPS_LOCK_INDEX);
-#        endif
+        if(CAPS_LOCK_INDEX < 0 ) {
+            SET_ALL_LED_RED();
+        } else {
+#            if defined(DIM_CAPS_LOCK)
+            SET_LED_OFF(CAPS_LOCK_INDEX);
+#            else
+            SET_LED_ON(CAPS_LOCK_INDEX);
+#            endif
+        }
     }
 #    endif
 #    if defined(SCROLL_LOCK_INDEX)
